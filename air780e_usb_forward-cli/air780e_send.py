@@ -74,4 +74,5 @@ if args.phone and args.text:
     exit(0)
 
 print('invalid arguments')
+parser.print_help()
 exit(1)
