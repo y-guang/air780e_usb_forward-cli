@@ -6,6 +6,7 @@ import typer
 
 from . import __app_name__, __version__
 from .commands.init_cmd import init_command
+from .commands.console_cmd import console_command
 
 app = typer.Typer(help="Configure AIR780E USB forwarding per project.")
 
@@ -30,6 +31,7 @@ def main(  # pragma: no cover - thin glue to expose version/help only
 
 
 app.command(name="init")(init_command)
+app.command(name="console")(console_command)
 
 
 if __name__ == "__main__":
