@@ -26,3 +26,4 @@ Example message from AIR780E:
 
 - Minimal Design. It's a lightweight cli tools rather than complete framework.
 - use modern python syntax (type hinting assuming python 3.12+)
+- Do not write tests without specific instructions. For each module, write a minimum demo under __main__.
