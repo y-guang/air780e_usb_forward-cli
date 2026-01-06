@@ -71,12 +71,10 @@ class CmtParser(BaseChildParser):
         sender_hex = sender_match.group(2)
         sender_bytes = _hex_to_bytes(sender_hex)
         sender = _safe_decode_utf16be(sender_bytes) if sender_bytes else ""
-        if not sender:
-            return ascii_view
 
         # Replace sender using regex groups to minimize accidental changes.
         def _replace_sender(m: re.Match[str]) -> str:
-            return f"{m.group(1)}{sender}{m.group(3)}"
+            return f"{m.group(1)}{sender}{m.group(3)}" if sender else m.group(0)
 
         text = self.sender_pattern.sub(_replace_sender, ascii_view, count=1)
 
