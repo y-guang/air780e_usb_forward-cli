@@ -217,6 +217,6 @@ if __name__ == "__main__":
         print("No AT devices found; nothing to listen to.")
     else:
         port_path = devices[0]
-        logpath = os.path.join(os.getcwd(), "listener_live.jsonl")
+        logpath = os.path.join(os.getcwd(), "messages.jsonl")
         print(f"Listening on {port_path}, logging to {logpath}")
         listen(port_path, logpath, intra_timeout_ms=100)

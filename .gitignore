@@ -1,4 +1,5 @@
-.air780e.json
+*.json
+*.jsonl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
