@@ -24,9 +24,7 @@ def _read_sysfs_interface(dev_path: Path) -> str:
     for candidate in candidates:
         try:
             text = candidate.read_text(encoding="utf-8", errors="ignore").strip()
-        except FileNotFoundError:
-            continue
-        except PermissionError:
+        except Exception:
             continue
         if text:
             return text
@@ -49,10 +47,10 @@ def list_at_devices() -> list[str]:
     for link in candidates:
         try:
             dev_path = link.resolve(strict=True)
-        except FileNotFoundError:
+            interface = _read_sysfs_interface(dev_path).strip().lower()
+        except Exception:
             continue
 
-        interface = _read_sysfs_interface(dev_path).strip().lower()
         if interface == "at":
             results.append(str(dev_path))
 
