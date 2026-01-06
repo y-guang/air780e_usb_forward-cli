@@ -15,11 +15,11 @@ from .ports import list_at_devices
 
 
 INITIAL_CMDS: list[str] = [
-    "AT+CMGF=1", # Set SMS to text mode
-    "AT+CSMP=17,167,0,8", # Set <dcs>=8 (UTF-16BE) for SMS
-    "AT+CSCS=IRA", # Set character set to IRA
-    "AT+RNDISCALL=0", # Disable network adapter
-    "AT&W", # persist settings
+    "AT+CMGF=1",  # Set SMS to text mode
+    "AT+CSMP=17,167,0,8",  # Set <dcs>=8 (UTF-16BE) for SMS
+    "AT+CSCS=IRA",  # Set character set to IRA
+    "AT+RNDISCALL=0",  # Disable network adapter
+    "AT&W",  # persist settings
 ]
 
 
