@@ -35,3 +35,11 @@ For current firmware, please use the latest version on `main`.
 
 - [AT Command Intro (合宙模组典型上网业务的 AT 上网流程)](https://docs.openluat.com/air780e/common/Air_AT/)
 - [AT Command Set (Air780E模块AT指令手册)](https://docs.openluat.com/air780e/at/app/at_command/)
+
+## Setup
+
+AT+CMGF=1
+AT+CSMP=17,167,0,8
+AT+CSCS=IRA
+AT+RNDISCALL=0
+AT&W

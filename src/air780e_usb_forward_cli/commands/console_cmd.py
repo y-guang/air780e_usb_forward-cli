@@ -9,7 +9,6 @@ import serial
 import typer
 
 from ..config import ProjectConfig, ValidationError, default_config_path
-import time
 
 
 def _resolve_serial_port(serial_port: Optional[str], config_path: Path | None) -> str:
