@@ -18,11 +18,25 @@ from .sms_sender import send_sms
 app = typer.Typer(add_completion=False)
 
 
+def _choose_port(explicit_port: str | None) -> str:
+    if explicit_port:
+        return explicit_port
+
+    ports = list_at_devices()
+    if not ports:
+        raise RuntimeError("No AT device found; specify --port to override.")
+    if len(ports) > 1:
+        raise RuntimeError("Multiple AT devices found; please specify --port.")
+    return ports[0]
+
+
 def _find_port(poll_interval_s: float = 60.0) -> str:
     while True:
         ports = list_at_devices()
         if ports:
-            return ports[0]
+            if len(ports) == 1:
+                return ports[0]
+            raise RuntimeError("Multiple AT devices found; please specify --port.")
         typer.echo("No AT device found; retrying in 60s...")
         time.sleep(poll_interval_s)
 
@@ -31,14 +45,20 @@ def _find_port(poll_interval_s: float = 60.0) -> str:
 def listen(
     logfile: str = typer.Option("messages.jsonl", "--logfile", "-o", help="Path to JSONL log file"),
     poll_interval: float = typer.Option(60.0, help="Seconds between port scans when none found"),
+    port: str | None = typer.Option(None, "--port", help="Explicit port path"),
 ) -> None:
     """Continuously find a port, init it, and start the listener."""
     while True:
-        port = _find_port(poll_interval_s=poll_interval)
-        typer.echo(f"Using port {port}")
+        try:
+            chosen = _choose_port(port)
+        except RuntimeError as exc:
+            typer.echo(str(exc))
+            time.sleep(poll_interval)
+            continue
+        typer.echo(f"Using port {chosen}")
 
         try:
-            send_initial_commands(port)
+            send_initial_commands(chosen)
         except Exception as exc:
             typer.echo(f"init commands failed ({exc}); retrying after delay")
             time.sleep(1.0)
@@ -47,7 +67,7 @@ def listen(
         time.sleep(1.0)
 
         try:
-            listen_sms(port, logfile, intra_timeout_ms=100)
+            listen_sms(chosen, logfile, intra_timeout_ms=100)
         except KeyboardInterrupt:
             raise
         except Exception as exc:
@@ -60,17 +80,18 @@ def listen(
 def send(
     phone: str = typer.Option(..., "--phone", "-p", help="Destination phone number"),
     message: str = typer.Option(..., "--message", "-m", help="Message text"),
+    port: str | None = typer.Option(None, "--port", help="Explicit port path"),
 ) -> None:
     """Send one SMS then exit."""
-    ports = list_at_devices()
-    if not ports:
-        typer.echo("No AT device found; cannot send SMS.")
+    try:
+        chosen = _choose_port(port)
+    except RuntimeError as exc:
+        typer.echo(str(exc))
         raise typer.Exit(code=1)
 
-    port = ports[0]
-    typer.echo(f"Sending SMS via {port} ...")
+    typer.echo(f"Sending SMS via {chosen} ...")
     try:
-        send_sms(port, phone=phone, message=message)
+        send_sms(chosen, phone=phone, message=message)
         typer.echo("Send invoked.")
     except Exception as exc:
         typer.echo(f"send encountered an error (continuing): {exc}")
