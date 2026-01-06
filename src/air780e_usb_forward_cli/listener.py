@@ -28,6 +28,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Union
 
+from .message_parser import parse_message_hex
+
 
 def _open_fd(port: str | int) -> int:
     if isinstance(port, int):
@@ -145,10 +147,14 @@ def listen(port: str | int, filepath: str, intra_timeout_ms: int = 100) -> None:
                     # Timeout: finalize + flush message.
                     payload = b"".join(message_chunks)
 
+                    message_hex = payload.hex()
+                    message_latin1 = payload.decode("latin-1", errors="replace")
                     entry = {
                         "timestamp_local": _now_iso(),
                         "timestamp": _now_epoch_ms(),
-                        "message_hex": payload.hex(),
+                        "message_hex": message_hex,
+                        "message_latin1": message_latin1,
+                        "message_parsed": parse_message_hex(message_hex),
                     }
                     logf.write(json.dumps(entry, ensure_ascii=False) + "\n")
                     logf.flush()
