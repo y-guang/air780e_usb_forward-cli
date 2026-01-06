@@ -30,21 +30,10 @@ def _choose_port(explicit_port: str | None) -> str:
     return ports[0]
 
 
-def _find_port(poll_interval_s: float = 60.0) -> str:
-    while True:
-        ports = list_at_devices()
-        if ports:
-            if len(ports) == 1:
-                return ports[0]
-            raise RuntimeError("Multiple AT devices found; please specify --port.")
-        typer.echo("No AT device found; retrying in 60s...")
-        time.sleep(poll_interval_s)
-
-
 @app.command(name="listen")
 def listen(
     logfile: str = typer.Option("messages.jsonl", "--logfile", "-o", help="Path to JSONL log file"),
-    poll_interval: float = typer.Option(60.0, help="Seconds between port scans when none found"),
+    poll_interval: float = typer.Option(10.0, help="Seconds between port scans when none found"),
     port: str | None = typer.Option(None, "--port", help="Explicit port path"),
 ) -> None:
     """Continuously find a port, init it, and start the listener."""
@@ -61,7 +50,7 @@ def listen(
             send_initial_commands(chosen)
         except Exception as exc:
             typer.echo(f"init commands failed ({exc}); retrying after delay")
-            time.sleep(1.0)
+            time.sleep(poll_interval)
             continue
 
         time.sleep(1.0)
