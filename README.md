@@ -1,7 +1,15 @@
 # AIR780E USB SMS CLI
 
 A command-line tool for **sending and receiving SMS** via the **AIR780E (USB version)**.
-Incoming messages are forwarded to a local file, and outgoing messages can be sent directly from the CLI.
+- Incoming messages are forwarded to a local file
+- outgoing messages can be sent directly from the CLI.
+
+这是一个用于 **AIR780E（USB 版本）** 的命令行工具，支持 **发送和接收短信（SMS）**。
+
+- **接收短信**：自动监听模块的短信通知，并转发保存到本地文件
+- **发送短信**：通过命令行直接向指定手机号发送短信
+
+**[中文文档](README.zh-CN.md)**：查看中文版使用说明。
 
 ## Usage
 
