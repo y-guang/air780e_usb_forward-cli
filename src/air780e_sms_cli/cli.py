@@ -108,7 +108,7 @@ After=network.target
 User={user}
 WorkingDirectory={workdir}
 ExecStart={exec_cmd}
-Restart=on-failure
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
