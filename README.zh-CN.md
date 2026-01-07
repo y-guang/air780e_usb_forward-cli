@@ -93,6 +93,10 @@ uv run air780e send --phone 10010 --message "CXHF"
 
 若本地日志应当能收到相应的回复短信记录。
 
+### 消息预览
+
+本项目也提供一个极简的 Web 界面，用于格式化展示接收到的短信内容，见[messages_viewer.html](messages_viewer.html)。需自行启动一个静态文件服务器来访问该页面，如 live-server。
+
 ## 当前固件与兼容性说明
 
 * 当前版本基于 **AIR780E 固件 v7.2**

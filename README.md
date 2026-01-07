@@ -34,6 +34,7 @@ To start listening for incoming SMS messages and logging them to `messages.jsonl
 ```bash
 uv run air780e listen
 ```
+The process keeps running to parse and log messages in real time.
 
 ### Sending a Test SMS
 
@@ -42,6 +43,7 @@ To send a test SMS message to a specified phone number:
 ```bash
 uv run air780e send --phone 1234567890 --message "Hello, World!"
 ```
+Note: run the listener once before your first send so the module is initialized properly.
 
 ### Auto Start on Boot (systemd)
 
@@ -85,9 +87,16 @@ uv run air780e send --phone 10010 --message "CXHF"
 
 If the service is running properly, the corresponding reply SMS should appear in the local logs.
 
+### Message Preview
+
+An ultra-simple web page is available to format incoming SMS logs: see [messages_viewer.html](messages_viewer.html). Serve it with any static file server (for example, `live-server`) and open in your browser.
+
 ## Current Firmware Compatibility
 
-Current version is based on AIR780E v7.2 firmware, and the AT command set [v1.6.7](https://docs.openluat.com/cdn/%E4%B8%8A%E6%B5%B7%E5%90%88%E5%AE%99Cat.1%E6%A8%A1%E7%BB%84(%E7%A7%BB%E8%8A%AFEC618&EC716&EC718%E5%B9%B3%E5%8F%B0%E7%B3%BB%E5%88%97)AT%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8CV1.6.7.pdf).
+Current version targets:
+
+- AIR780E firmware v7.2
+- AT command set [v1.6.7](https://docs.openluat.com/cdn/%E4%B8%8A%E6%B5%B7%E5%90%88%E5%AE%99Cat.1%E6%A8%A1%E7%BB%84(%E7%A7%BB%E8%8A%AFEC618&EC716&EC718%E5%B9%B3%E5%8F%B0%E7%B3%BB%E5%88%97)AT%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8CV1.6.7.pdf)
 
 Tested with Ubuntu 24.04 and Python 3.12.
 
