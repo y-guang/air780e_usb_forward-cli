@@ -1,4 +1,4 @@
-# AIR780E USB 短信 CLI 工具
+# AIR780E USB 短信命令行工具
 
 这是一个用于 **AIR780E（USB 版本）** 的命令行工具，支持 **发送和接收短信（SMS）**。
 
@@ -44,7 +44,7 @@ uv run air780e listen
 向指定手机号发送一条短信：
 
 ```bash
-uv run air780e send-sms --phone 1234567890 --message "Hello, World!"
+uv run air780e send --phone 1234567890 --message "Hello, World!"
 ```
 
 * `--phone`：目标手机号码

@@ -40,7 +40,7 @@ uv run air780e listen
 To send a test SMS message to a specified phone number:
 
 ```bash
-uv run air780e send-sms --phone 1234567890 --message "Hello, World!"
+uv run air780e send --phone 1234567890 --message "Hello, World!"
 ```
 
 ## Current Firmware Compatibility
