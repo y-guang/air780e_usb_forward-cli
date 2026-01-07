@@ -50,6 +50,8 @@ uv run air780e send --phone 1234567890 --message "Hello, World!"
 * `--phone`：目标手机号码
 * `--message`：短信内容（文本模式）
 
+**注意**：首次使用必须先运行监听命令，确保模块已初始化。
+
 ### 开机自启动（systemd）
 
 可通过 **systemd** 将监听进程注册为系统服务，实现开机自动启动。
