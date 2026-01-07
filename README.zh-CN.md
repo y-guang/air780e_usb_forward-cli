@@ -76,8 +76,8 @@ uv run air780e gen-server
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable air780e_recording.service
-sudo systemctl start air780e_recording.service
+sudo systemctl enable air780e_sms_listener.service
+sudo systemctl start air780e_sms_listener.service
 ```
 
 此后服务将在系统启动时自动运行。

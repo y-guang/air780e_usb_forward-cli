@@ -68,8 +68,8 @@ Reload systemd and enable the service:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable air780e_recording.service
-sudo systemctl start air780e_recording.service
+sudo systemctl enable air780e_sms_listener.service
+sudo systemctl start air780e_sms_listener.service
 ```
 
 After this, the service will automatically start on system boot.
