@@ -5,6 +5,12 @@
 * **接收短信**：自动监听模块的短信通知，并转发保存到本地文件
 * **发送短信**：通过命令行直接向指定手机号发送短信
 
+A command-line tool for **sending and receiving SMS** via the **AIR780E (USB version)**.
+- Incoming messages are forwarded to a local file
+- outgoing messages can be sent directly from the CLI.
+
+**[English Documentation](README.en.md)**: See the English version README.
+
 ## 使用说明
 
 ### 准备工作
