@@ -58,13 +58,13 @@ uv run air780e send --phone 1234567890 --message "Hello, World!"
 
 #### 生成并配置服务文件
 
-先生成 systemd 单元文件：
+先生成 systemd 单元文件内容：
 
 ```bash
 uv run air780e gen-server
 ```
 
-根据实际环境需要，按需修改生成的服务文件内容（如 `User`、`WorkingDirectory`、执行路径等），然后将其放置到：
+将其放置到：
 
 ```bash
 /etc/systemd/system/air780e_sms_listener.service
