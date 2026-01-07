@@ -1,72 +1,78 @@
-# AIR780E USB SMS CLI
-
-A command-line tool for **sending and receiving SMS** via the **AIR780E (USB version)**.
-- Incoming messages are forwarded to a local file
-- outgoing messages can be sent directly from the CLI.
+# AIR780E USB 短信命令行工具
 
 这是一个用于 **AIR780E（USB 版本）** 的命令行工具，支持 **发送和接收短信（SMS）**。
 
-- **接收短信**：自动监听模块的短信通知，并转发保存到本地文件
-- **发送短信**：通过命令行直接向指定手机号发送短信
+* **接收短信**：自动监听模块的短信通知，并转发保存到本地文件
+* **发送短信**：通过命令行直接向指定手机号发送短信
 
-**[中文文档](README.zh-CN.md)**：查看中文版使用说明。
+## 使用说明
 
-## Usage
+### 准备工作
 
-### Preparation
-
-Ensure your user account has permission to access serial devices:
+请确保当前用户有权限访问串口设备（`/dev/tty*`）：
 
 ```bash
 sudo usermod -aG dialout $USER
 ```
 
-Log out and log back in for the change to take effect.
+执行完成后，**注销并重新登录**，使用户组变更生效。
 
-### Python Environment
+### Python 运行环境
 
-Run `uv sync` to set up a virtual environment with dependencies installed.
+本项目使用 `uv` 进行 Python 虚拟环境和依赖管理。
 
-### Listening for Incoming SMS
+在项目根目录下运行：
 
-To start listening for incoming SMS messages and logging them to `messages.jsonl`:
+```bash
+uv sync
+```
+
+该命令会创建虚拟环境并安装所需依赖。
+
+### 监听并接收短信
+
+启动短信监听服务，将收到的短信写入本地文件 `messages.jsonl`：
 
 ```bash
 uv run air780e listen
 ```
-The process keeps running to parse and log messages in real time.
 
-### Sending a Test SMS
+程序会持续运行，实时解析并记录模块收到的短信。
 
-To send a test SMS message to a specified phone number:
+### 发送测试短信
+
+向指定手机号发送一条短信：
 
 ```bash
 uv run air780e send --phone 1234567890 --message "Hello, World!"
 ```
-Note: run the listener once before your first send so the module is initialized properly.
 
-### Auto Start on Boot (systemd)
+* `--phone`：目标手机号码
+* `--message`：短信内容（文本模式）
 
-You can register the listener process as a **systemd** service to ensure it starts automatically when the system boots.
+**注意**：首次使用必须先运行监听命令，确保模块已初始化。
 
-#### Generate and Configure the Service File
+### 开机自启动（systemd）
 
-First, generate a systemd unit file:
+可通过 **systemd** 将监听进程注册为系统服务，实现开机自动启动。
+
+#### 生成并配置服务文件
+
+先生成 systemd 单元文件内容：
 
 ```bash
 uv run air780e gen-server
 ```
 
-Modify the generated service file as needed to match your environment (for example, adjust `User`, `WorkingDirectory`, and the executable path).
-Then place the file at:
+将其放置到：
 
 ```bash
 /etc/systemd/system/air780e_sms_listener.service
 ```
 
-#### Register and Start the Service
+#### 注册并启动服务
 
-Reload systemd and enable the service:
+加载并启用服务：
 
 ```bash
 sudo systemctl daemon-reload
@@ -74,45 +80,50 @@ sudo systemctl enable air780e_sms_listener.service
 sudo systemctl start air780e_sms_listener.service
 ```
 
-After this, the service will automatically start on system boot.
+此后服务将在系统启动时自动运行。
 
-#### Verify Service Operation
+#### 运行状态验证
 
-You can send a balance inquiry SMS to a carrier number to verify that the service is working correctly:
+可向运营商号码发送话费查询短信，以验证服务是否正常工作：
 
 ```bash
-# China Unicom
+# 中国联通
 uv run air780e send --phone 10010 --message "CXHF"
 ```
 
-If the service is running properly, the corresponding reply SMS should appear in the local logs.
+若本地日志应当能收到相应的回复短信记录。
 
-### Message Preview
+### 消息预览
 
-An ultra-simple web page is available to format incoming SMS logs: see [messages_viewer.html](messages_viewer.html). Serve it with any static file server (for example, `live-server`) and open in your browser.
+本项目也提供一个极简的 Web 界面，用于格式化展示接收到的短信内容，见[messages_viewer.html](messages_viewer.html)。需自行启动一个静态文件服务器来访问该页面，如 live-server。
 
-## Current Firmware Compatibility
+## 当前固件与兼容性说明
 
-Current version targets:
+* 当前版本基于 **AIR780E 固件 v7.2**
+* 使用的 AT 指令集版本为 **v1.6.7**
+  👉 参考文档：
+  [上海合宙 AT命令手册V1.6.7.pdf](https://docs.openluat.com/cdn/上海合宙Cat.1模块%28移芯EC618&EC716&EC718平台系列%29AT命令手册V1.6.7.pdf)
 
-- AIR780E firmware v7.2
-- AT command set [v1.6.7](https://docs.openluat.com/cdn/%E4%B8%8A%E6%B5%B7%E5%90%88%E5%AE%99Cat.1%E6%A8%A1%E7%BB%84(%E7%A7%BB%E8%8A%AFEC618&EC716&EC718%E5%B9%B3%E5%8F%B0%E7%B3%BB%E5%88%97)AT%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8CV1.6.7.pdf)
 
-Tested with Ubuntu 24.04 and Python 3.12.
+### 测试环境
 
-### Previous Versions
+* 操作系统：Ubuntu 24.04
+* Python 版本：Python 3.12
 
-Earlier versions of this tool are available on the branch:
+## 历史版本说明
+
+旧版本代码保存在以下分支中：
 
 ```
 archive/v2.0
 ```
 
-⚠️ **Note:**
-The archived version is **no longer maintained** and is **not compatible** with newer AIR780E firmware, as the AT command set has changed.
-For current firmware, please use the latest version on `main`.
+* 该历史分支`archive/v2.0`与较新的 AIR780E 固件不兼容
+* 原因：AIR780E 新固件的 **AT 指令集发生了较大变更**
 
-## References
+如果你使用的是 **当前或较新的固件版本**，请务必使用 `main` 分支中的最新实现。
+
+## 参考文档
 
 - [AT Command Intro (合宙模组典型上网业务的 AT 上网流程)](https://docs.openluat.com/air780e/common/Air_AT/)
 - [AT Command Set (Air780E模块AT指令手册)](https://docs.openluat.com/air780e/at/app/at_command/)
