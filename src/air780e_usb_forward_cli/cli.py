@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import time
 import typer
+from pathlib import Path
 
 from .init_commands import send_initial_commands
 from .listener import listen as listen_sms
@@ -84,6 +85,41 @@ def send(
         typer.echo("Send invoked.")
     except Exception as exc:
         typer.echo(f"send encountered an error (continuing): {exc}")
+
+
+@app.command(name="gen-server")
+def gen_server(
+    output: str = typer.Option("-", "--output", "-o", help="Path to write unit file, '-' for stdout"),
+) -> None:
+    """Generate a systemd unit for the listener."""
+    import getpass
+    import sys
+
+    user = getpass.getuser()
+    workdir = str(Path.cwd())
+    python_exe = sys.executable
+    exec_cmd = f"{python_exe} -m air780e_usb_forward_cli.cli listen"
+
+    unit = f"""[Unit]
+Description=air780e_sms_listener
+After=network.target
+
+[Service]
+User={user}
+WorkingDirectory={workdir}
+ExecStart={exec_cmd}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+"""
+
+    if output == "-":
+        typer.echo(unit)
+    else:
+        path = Path(output)
+        path.write_text(unit, encoding="utf-8")
+        typer.echo(f"Wrote {path}")
 
 
 if __name__ == "__main__":

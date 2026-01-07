@@ -43,6 +43,48 @@ To send a test SMS message to a specified phone number:
 uv run air780e send --phone 1234567890 --message "Hello, World!"
 ```
 
+### Auto Start on Boot (systemd)
+
+You can register the listener process as a **systemd** service to ensure it starts automatically when the system boots.
+
+#### Generate and Configure the Service File
+
+First, generate a systemd unit file:
+
+```bash
+uv run air780e gen-server
+```
+
+Modify the generated service file as needed to match your environment (for example, adjust `User`, `WorkingDirectory`, and the executable path).
+Then place the file at:
+
+```bash
+/etc/systemd/system/air780e_sms_listener.service
+```
+
+#### Register and Start the Service
+
+Reload systemd and enable the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable air780e_recording.service
+sudo systemctl start air780e_recording.service
+```
+
+After this, the service will automatically start on system boot.
+
+#### Verify Service Operation
+
+You can send a balance inquiry SMS to a carrier number to verify that the service is working correctly:
+
+```bash
+# China Unicom
+uv run air780e send --phone 10010 --message "CXHF"
+```
+
+If the service is running properly, the corresponding reply SMS should appear in the local logs.
+
 ## Current Firmware Compatibility
 
 Current version is based on AIR780E v7.2 firmware, and the AT command set [v1.6.7](https://docs.openluat.com/cdn/%E4%B8%8A%E6%B5%B7%E5%90%88%E5%AE%99Cat.1%E6%A8%A1%E7%BB%84(%E7%A7%BB%E8%8A%AFEC618&EC716&EC718%E5%B9%B3%E5%8F%B0%E7%B3%BB%E5%88%97)AT%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8CV1.6.7.pdf).

@@ -50,6 +50,47 @@ uv run air780e send --phone 1234567890 --message "Hello, World!"
 * `--phone`：目标手机号码
 * `--message`：短信内容（文本模式）
 
+### 开机自启动（systemd）
+
+可通过 **systemd** 将监听进程注册为系统服务，实现开机自动启动。
+
+#### 生成并配置服务文件
+
+先生成 systemd 单元文件：
+
+```bash
+uv run air780e gen-server
+```
+
+根据实际环境需要，按需修改生成的服务文件内容（如 `User`、`WorkingDirectory`、执行路径等），然后将其放置到：
+
+```bash
+/etc/systemd/system/air780e_sms_listener.service
+```
+
+#### 注册并启动服务
+
+加载并启用服务：
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable air780e_recording.service
+sudo systemctl start air780e_recording.service
+```
+
+此后服务将在系统启动时自动运行。
+
+#### 运行状态验证
+
+可向运营商号码发送话费查询短信，以验证服务是否正常工作：
+
+```bash
+# 中国联通
+uv run air780e send --phone 10010 --message "CXHF"
+```
+
+若本地日志应当能收到相应的回复短信记录。
+
 ## 当前固件与兼容性说明
 
 * 当前版本基于 **AIR780E 固件 v7.2**
