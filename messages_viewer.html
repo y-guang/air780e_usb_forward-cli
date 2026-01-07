@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AIR780E Messages Viewer</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    body { margin: 0; padding: 16px; }
+    h1 { margin: 0 0 12px 0; font-size: 18px; }
+    .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .btn { cursor: pointer; padding: 6px 10px; border: 1px solid #334155; background: #1e293b; color: inherit; border-radius: 6px; }
+    .list { display: flex; flex-direction: column; gap: 8px; }
+    .card { border: 1px solid #1f2937; border-radius: 10px; background: #111827; padding: 10px 12px; }
+    .header { display: flex; justify-content: space-between; gap: 8px; align-items: center; cursor: pointer; }
+    .time { color: #94a3b8; font-size: 12px; }
+    .msg { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; white-space: pre-wrap; word-break: break-word; }
+    .details { margin-top: 8px; font-size: 12px; color: #cbd5e1; display: none; }
+    .details pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+    .empty { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <h1>AIR780E Messages</h1>
+  <div class="controls">
+    <button class="btn" id="reload">Reload</button>
+    <label><input type="checkbox" id="filterCmt" checked /> Show only messages containing +CMT:</label>
+    <span id="status" class="time"></span>
+  </div>
+  <div id="list" class="list"></div>
+  <script>
+    const listEl = document.getElementById('list');
+    const statusEl = document.getElementById('status');
+    const filterCmtEl = document.getElementById('filterCmt');
+
+    document.getElementById('reload').addEventListener('click', load);
+    filterCmtEl.addEventListener('change', load);
+
+    async function load() {
+      statusEl.textContent = 'Loading...';
+      listEl.innerHTML = '';
+      try {
+        const res = await fetch('messages.jsonl', { cache: 'no-store' });
+        if (!res.ok) throw new Error('fetch failed: ' + res.status);
+        const text = await res.text();
+        const records = text.split(/\n+/).filter(Boolean).map(line => {
+          try { return JSON.parse(line); } catch { return null; }
+        }).filter(Boolean);
+
+        records.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        const filtered = filterCmtEl.checked
+          ? records.filter(r => (r.message_parsed || r.message_latin1 || '').includes('+CMT:'))
+          : records;
+
+        if (filtered.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'empty';
+          div.textContent = 'No messages';
+          listEl.appendChild(div);
+        } else {
+          for (const rec of filtered) {
+            listEl.appendChild(renderCard(rec));
+          }
+        }
+        statusEl.textContent = `${filtered.length} shown (${records.length} total)`;
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    function renderCard(rec) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const header = document.createElement('div');
+      header.className = 'header';
+      const msg = document.createElement('div');
+      msg.className = 'msg';
+      msg.textContent = rec.message_parsed || rec.message_latin1 || '[no message]';
+      const time = document.createElement('div');
+      time.className = 'time';
+      time.textContent = rec.timestamp_local || new Date((rec.timestamp || 0)).toISOString();
+      header.appendChild(msg);
+      header.appendChild(time);
+
+      const details = document.createElement('div');
+      details.className = 'details';
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(rec, null, 2);
+      details.appendChild(pre);
+
+      header.addEventListener('click', () => {
+        details.style.display = details.style.display === 'block' ? 'none' : 'block';
+      });
+
+      card.appendChild(header);
+      card.appendChild(details);
+      return card;
+    }
+
+    load();
+  </script>
+</body>
+</html>
