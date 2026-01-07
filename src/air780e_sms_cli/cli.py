@@ -98,7 +98,7 @@ def gen_server(
     user = getpass.getuser()
     workdir = str(Path.cwd())
     python_exe = sys.executable
-    exec_cmd = f"{python_exe} -m air780e_usb_forward_cli.cli listen"
+    exec_cmd = f"{python_exe} -m air780e_sms_cli.cli listen"
 
     unit = f"""[Unit]
 Description=air780e_sms_listener

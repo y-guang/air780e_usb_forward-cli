@@ -1,4 +1,4 @@
-# AIR780E USB SMS CLI
+# AIR780E SMS CLI
 
 A command-line tool for **sending and receiving SMS** via the **AIR780E (USB version)**.
 - Incoming messages are forwarded to a local file

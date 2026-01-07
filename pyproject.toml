@@ -1,5 +1,5 @@
 [project]
-name = "air780e-usb-forward-cli"
+name = "air780e-sms-cli"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-air780e = "air780e_usb_forward_cli.cli:app"
+air780e = "air780e_sms_cli.cli:app"
 
 [build-system]
 requires = ["hatchling"]
