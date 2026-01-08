@@ -3,6 +3,7 @@
 Commands:
 - listen: continually seek a port, send initial AT setup, then log messages to JSONL.
 - send: send a single SMS via AT+CMGS.
+- recent: show the most recent matching messages.
 """
 from __future__ import annotations
 
@@ -85,6 +86,52 @@ def send(
         typer.echo("Send invoked.")
     except Exception as exc:
         typer.echo(f"send encountered an error (continuing): {exc}")
+
+
+@app.command(name="recent")
+def recent(
+    logfile: str = typer.Option("messages.jsonl", "--logfile", "-f", help="Path to JSONL log file"),
+    count: int = typer.Option(5, "--count", "-n", help="Maximum messages to display"),
+    pattern: str = typer.Option(r"\+CMT:", "--pattern", "-p", help="Regex applied to message_parsed"),
+) -> None:
+    """Print the most recent messages matching the regex pattern (default +CMT:)."""
+    import json
+    import re
+    
+    path = Path(logfile)
+    if not path.exists():
+        typer.echo(f"{logfile} not found")
+        raise typer.Exit(code=1)
+
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except Exception as exc:
+        typer.echo(f"failed to read {logfile}: {exc}")
+        raise typer.Exit(code=1)
+
+    regex = re.compile(pattern)
+    results: list[str] = []
+
+    for line in reversed(lines):
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        msg = obj.get("message_parsed")
+        if not msg or not regex.search(msg):
+            continue
+
+        results.append(msg)
+        if len(results) >= count:
+            break
+
+    if not results:
+        typer.echo("No matching messages.")
+        return
+
+    results.reverse()
+    typer.echo("\n---\n".join(results))
 
 
 @app.command(name="gen-server")
