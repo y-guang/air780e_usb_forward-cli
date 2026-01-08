@@ -130,7 +130,6 @@ def recent(
         typer.echo("No matching messages.")
         return
 
-    results.reverse()
     typer.echo("\n---\n".join(results))
 
 
